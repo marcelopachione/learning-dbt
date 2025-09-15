@@ -1,8 +1,8 @@
 import os
 import logging
-import requests
-import psycopg2
-from dotenv import load_dotenv
+import requests # pyright: ignore[reportMissingModuleSource]
+import psycopg2 # pyright: ignore[reportMissingModuleSource]
+from dotenv import load_dotenv # pyright: ignore[reportMissingImports]
 
 # Load envs
 load_dotenv()
@@ -88,7 +88,7 @@ def create_schema_and_table(conn):
 
             conn.commit()
 
-            logger.info(f"Schema and table created sucessfully.")
+            logger.info("Schema and table created sucessfully.")
     except psycopg2.Error as e:
         logging.error(f"Error creating schema and table: {e}.")
         return None
