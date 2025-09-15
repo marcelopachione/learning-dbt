@@ -40,5 +40,5 @@ def get_weather_data(city: str):
         return None
 
 if __name__ == '__main__':
-    city = 'Dublin'
+    city = 'Sao Paulo'
     get_weather_data(city)
