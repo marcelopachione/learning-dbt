@@ -1,0 +1,11 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/postgres/p*
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+.env

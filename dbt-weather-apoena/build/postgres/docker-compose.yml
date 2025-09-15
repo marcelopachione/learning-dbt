@@ -1,0 +1,32 @@
+services:
+  postgres:
+    container_name: dbt-postgres
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+      # opcional: define o diretório de dados
+      # PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./postgresql_datafiles:/var/lib/postgresql/data
+      - ./files:/files
+      - ./stage:/stage
+
+  pgadmin:
+    container_name: dbt-pgadmin
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: pgadmin@pgadmin.com
+      PGADMIN_DEFAULT_PASSWORD: postgres
+      PGADMIN_LISTEN_PORT: 5050
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+    ports:
+      - "5050:5050"
+    volumes:
+      - ./pgadmin_root_prefs:/root/.pgadmin
+      - ./pgadmin_working_dir:/var/lib/pgadmin
+      - ./files:/files
+      - ./stage:/stage
