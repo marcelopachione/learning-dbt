@@ -52,11 +52,11 @@ def get_weather_data(city: str):
 
         weather_data = response.json()
 
-        logger.info(f"Weather data for {city}: {weather_data}")
+        logger.info(f"Weather data for {city}: {weather_data}.")
 
         return weather_data
     except requests.RequestException as e:
-        logger.error(f"Error featching weather data: {e}")
+        logger.error(f"Error featching weather data: {e}.")
 
         return None
 
@@ -64,7 +64,7 @@ def get_weather_data(city: str):
 def create_schema_and_table(conn):
     
     if not conn:
-        logging.error("No database connection available")
+        logging.error("No database connection available.")
         return None
     
     try:
@@ -88,18 +88,53 @@ def create_schema_and_table(conn):
 
             conn.commit()
 
-            logger.info(f"Schema and table created sucessfully")
+            logger.info(f"Schema and table created sucessfully.")
     except psycopg2.Error as e:
-        logging.error(f"Error creating schema and table: {e}")
+        logging.error(f"Error creating schema and table: {e}.")
         return None
 
 
+def insert_weather_data(conn, city, weather_data):
+    
+    if conn is None:
+        logging.error("No database connection available.")
+        return None
 
+    try:
+        with conn.cursor() as cursor:
+            cursor.execute("""
+                INSERT INTO weather.city_weather (
+                    city,
+                    temperature,
+                    weather_description,
+                    wind_speed,
+                    time,
+                    inserted_at,
+                    timezone
+                ) VALUES (%s, %s, %s, %s, to_timestamp(%s), NOW(), %s);        
+            """, (
+                weather_data['name'],
+                weather_data['main']['temp'],
+                weather_data['weather'][0]['description'],
+                weather_data['wind']['speed'],
+                weather_data['dt'],
+                weather_data['timezone']
+            ))
+            conn.commit()
+            logger.info(f"Weather data for {city} inserted successfully.")
+
+    except psycopg2.Error as e:
+        logging.error(f"Error inserting weather data: {e}")
+        return None
 
 if __name__ == '__main__':
-    # city = 'Sao Paulo'
-    # get_weather_data(city)
+    city = 'Sao Paulo'
+    weather_data = get_weather_data(city)
 
     conn = connecto_to_database()
 
     create_schema_and_table(conn)
+
+    insert_weather_data(conn, city, weather_data)
+
+    conn.close()
