@@ -60,9 +60,46 @@ def get_weather_data(city: str):
 
         return None
 
+## Create schema and DB tables
+def create_schema_and_table(conn):
+    
+    if not conn:
+        logging.error("No database connection available")
+        return None
+    
+    try:
+        with conn.cursor() as cursor:
+            cursor.execute("CREATE SCHEMA IF NOT EXISTS weather;")
+
+            cursor.execute(
+                """
+                    CREATE TABLE IF NOT EXISTS weather.city_weather (
+                        id SERIAL PRIMARY KEY,
+                        city TEXT,
+                        temperature FLOAT,
+                        weather_description TEXT,
+                        wind_speed FLOAT,
+                        time TIMESTAMP,
+                        inserted_at TIMESTAMP DEFAULT NOW(),
+                        timezone TEXT
+                    );
+                """
+            )
+
+            conn.commit()
+
+            logger.info(f"Schema and table created sucessfully")
+    except psycopg2.Error as e:
+        logging.error(f"Error creating schema and table: {e}")
+        return None
+
+
+
 
 if __name__ == '__main__':
-    city = 'Sao Paulo'
-    get_weather_data(city)
+    # city = 'Sao Paulo'
+    # get_weather_data(city)
 
-    connecto_to_database()
+    conn = connecto_to_database()
+
+    create_schema_and_table(conn)
